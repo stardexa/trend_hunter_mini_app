@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Image Admin Panel</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #0b1220; /* deep navy */
+            --bg-secondary: #0f1b2e; /* darker blue */
+            --bg-tertiary: #0c1426; /* mid navy */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.86);
+            --accent-primary: #007AFF;
+            --accent-secondary: #FF3B30;
+            --accent-success: #34C759;
+            --border-color: rgba(173, 216, 230, 0.12);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --glass-bg: rgba(10, 20, 40, 0.28); /* blue-tinted glass */
+            --glass-border: rgba(173, 216, 230, 0.18);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: 
+                linear-gradient(135deg, rgba(5, 10, 20, 0.7) 0%, rgba(10, 22, 44, 0.7) 50%, rgba(6, 14, 30, 0.7) 100%),
+                url('https://www.incehesap.com/resim/blog2/2018-06/macos-majove-de-karanlik-mod-dark-mode-nasil-etkinlestirilir2018-06-29-17-22-15_480.jpg') center/cover fixed;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 0, 0, 0.5) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .navbar {
+            background: rgba(10, 20, 40, 0.45) !important;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 0 4px;
+            padding: 8px 16px !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary) !important;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .card-header {
+            background: rgba(10, 20, 40, 0.18);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0 !important;
+            padding: 1.5rem;
+            backdrop-filter: blur(36px);
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056CC 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-success) 0%, #28A745 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 199, 89, 0.4);
+        }
+
+        .btn-success:hover::before {
+            left: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, #DC3545 100%);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 59, 48, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-danger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.4);
+        }
+
+        .btn-danger:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 12px 24px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-control, .form-select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 12px 16px;
+            backdrop-filter: blur(28px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 0, 0, 0.35);
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 122, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-label {
+            color: #eef5ff;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+
+        .badge {
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .image-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-actions {
+            padding: 0.75rem 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-actions .btn {
+            min-width: 0;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #00D4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress {
+            background: rgba(10, 20, 40, 0.22);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            backdrop-filter: blur(28px);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--accent-primary) 0%, #00D4FF 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            color: var(--accent-primary);
+            width: 3rem;
+            height: 3rem;
+            border-width: 4px;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        .alert-success {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .alert-danger {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .alert-info {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-primary);
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
+        .category-badge {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #00D4FF 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            display: inline-block;
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .generation-progress {
+            margin-top: 1rem;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.9rem;
+            }
+            
+            .stats-card {
+                padding: 1.1rem;
+            }
+            
+            .stats-number {
+                font-size: 1.9rem;
+            }
+            
+            .card-header {
+                padding: 1.1rem;
+            }
+            
+            .image-actions { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .image-actions .btn { width: 100%; padding: 8px 10px; font-size: 14px; }
+            .form-control, .form-select {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            .category-badge {
+                box-shadow: 0 4px 14px rgba(0,122,255,0.35);
+            }
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .modal-body {
+            color: var(--text-primary);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            opacity: 1;
+        }
+
+        .btn-close:hover {
+            color: var(--text-primary);
+            opacity: 1;
+        }
+        .status-pill {
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-weight: 700;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-images me-2"></i>
+                Image Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#view-images" data-tab="view">
+                            <i class="bi bi-eye me-1"></i>Görüntüle
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#generate-images" data-tab="generate">
+                            <i class="bi bi-plus-circle me-1"></i>Üret
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container" style="margin-top: 80px;">
+        <!-- Statistics Cards -->
+        <div class="stats-container">
+            <div class="stats-card">
+                <div class="stats-number" id="total-images">0</div>
+                <div class="stats-label">Toplam Resim</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number" id="approved-images">0</div>
+                <div class="stats-label">Onaylanan</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number" id="pending-images">0</div>
+                <div class="stats-label">Bekleyen</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number" id="generated-today">0</div>
+                <div class="stats-label">Bugün Üretilen</div>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- View Images Tab -->
+            <div id="view-content" class="tab-pane active">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="bi bi-images me-2"></i>Resim Görüntüleme ve Onaylama
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Category Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="category-filter" class="form-label">Kategori Seç</label>
+                                <select class="form-select" id="category-filter">
+                                    <option value="all">Hepsi</option>
+                                    <option value="nature">Doğa</option>
+                                    <option value="technology">Teknoloji</option>
+                                    <option value="art">Sanat</option>
+                                    <option value="business">İş</option>
+                                    <option value="lifestyle">Yaşam Tarzı</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status-filter" class="form-label">Durum</label>
+                                <select class="form-select" id="status-filter">
+                                    <option value="all">Hepsi</option>
+                                    <option value="pending">Bekleyen</option>
+                                    <option value="approved">Onaylanan</option>
+                                    <option value="rejected">Reddedilen</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div class="loading-spinner" id="loading-spinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Resimler yükleniyor...</p>
+                        </div>
+
+                        <!-- Images Grid -->
+                        <div class="image-grid" id="images-grid">
+                            <!-- Images will be loaded here -->
+                        </div>
+
+                        <!-- No Images Message -->
+                        <div class="text-center py-5" id="no-images-message" style="display: none;">
+                            <i class="bi bi-image display-1 text-muted"></i>
+                            <h4 class="mt-3 text-muted">Görüntülenecek resim bulunamadı</h4>
+                            <p class="text-muted">Farklı bir kategori veya durum seçmeyi deneyin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Images Tab -->
+            <div id="generate-content" class="tab-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="bi bi-plus-circle me-2"></i>Resim Üretimi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="generate-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="generate-category" class="form-label">Kategori</label>
+                                    <select class="form-select" id="generate-category" required>
+                                        <option value="">Kategori Seçin</option>
+                                        <option value="nature">Doğa</option>
+                                        <option value="technology">Teknoloji</option>
+                                        <option value="art">Sanat</option>
+                                        <option value="business">İş</option>
+                                        <option value="lifestyle">Yaşam Tarzı</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="image-count" class="form-label">Resim Sayısı</label>
+                                    <select class="form-select" id="image-count" required>
+                                        <option value="">Sayı Seçin</option>
+                                        <option value="1">1 Resim</option>
+                                        <option value="2">2 Resim</option>
+                                        <option value="4">4 Resim</option>
+                                        <option value="6">6 Resim</option>
+                                        <option value="8">8 Resim</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prompt-input" class="form-label">Prompt (İsteğe Bağlı)</label>
+                                <textarea class="form-control" id="prompt-input" rows="4" 
+                                    placeholder="Resim için özel bir prompt girin... (Boş bırakılırsa kategoriye uygun varsayılan prompt kullanılır)"></textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="generate-btn">
+                                    <i class="bi bi-magic me-2"></i>Resimleri Üret
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Generation Progress -->
+                        <div class="generation-progress" id="generation-progress" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Resim üretimi başlatıldı...
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" id="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-center text-muted" id="progress-text">Hazırlanıyor...</p>
+                        </div>
+
+                        <!-- Generated Images Preview -->
+                        <div id="generated-images-preview" style="display: none;">
+                            <h6 class="mt-4 mb-3">Üretilen Resimler</h6>
+                            <div class="image-grid" id="generated-grid">
+                                <!-- Generated images will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Resim Önizleme</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" class="img-fluid rounded" alt="Resim" style="max-height: 92vh; object-fit: contain;">
+                    <div class="mt-3">
+                        <span class="category-badge" id="modalCategory"></span>
+                        <p class="mt-2 text-muted" id="modalDescription"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Sample data for demonstration
+            const sampleImages = [
+                {
+                    id: 1,
+                    url: 'https://picsum.photos/400/300?random=1',
+                    category: 'nature',
+                    status: 'pending',
+                    description: 'Doğal manzara resmi'
+                },
+                {
+                    id: 2,
+                    url: 'https://picsum.photos/400/300?random=2',
+                    category: 'technology',
+                    status: 'approved',
+                    description: 'Teknoloji ürünü'
+                },
+                {
+                    id: 3,
+                    url: 'https://picsum.photos/400/300?random=3',
+                    category: 'art',
+                    status: 'pending',
+                    description: 'Sanat eseri'
+                },
+                {
+                    id: 4,
+                    url: 'https://picsum.photos/400/300?random=4',
+                    category: 'business',
+                    status: 'approved',
+                    description: 'İş dünyası'
+                },
+                {
+                    id: 5,
+                    url: 'https://picsum.photos/400/300?random=5',
+                    category: 'lifestyle',
+                    status: 'rejected',
+                    description: 'Yaşam tarzı'
+                }
+            ];
+
+            let currentImages = [...sampleImages];
+            let stats = {
+                total: sampleImages.length,
+                approved: sampleImages.filter(img => img.status === 'approved').length,
+                pending: sampleImages.filter(img => img.status === 'pending').length,
+                generatedToday: 0
+            };
+
+            // Initialize the app
+            init();
+
+            function init() {
+                updateStats();
+                loadImages();
+                setupEventListeners();
+            }
+
+            function setupEventListeners() {
+                // Tab navigation
+                $('.nav-link').click(function(e) {
+                    e.preventDefault();
+                    const tab = $(this).data('tab');
+                    switchTab(tab);
+                });
+
+                // Category and status filters
+                $('#category-filter, #status-filter').change(function() {
+                    loadImages();
+                });
+
+                // Generate form
+                $('#generate-form').submit(function(e) {
+                    e.preventDefault();
+                    generateImages();
+                });
+            }
+
+            function switchTab(tab) {
+                $('.nav-link').removeClass('active');
+                $(`.nav-link[data-tab="${tab}"]`).addClass('active');
+                
+                $('.tab-pane').removeClass('active');
+                $(`#${tab}-content`).addClass('active');
+            }
+
+            function updateStats() {
+                $('#total-images').text(stats.total);
+                $('#approved-images').text(stats.approved);
+                $('#pending-images').text(stats.pending);
+                $('#generated-today').text(stats.generatedToday);
+            }
+
+            function loadImages() {
+                const categoryFilter = $('#category-filter').val();
+                const statusFilter = $('#status-filter').val();
+                
+                let filteredImages = currentImages;
+
+                if (categoryFilter !== 'all') {
+                    filteredImages = filteredImages.filter(img => img.category === categoryFilter);
+                }
+
+                if (statusFilter !== 'all') {
+                    filteredImages = filteredImages.filter(img => img.status === statusFilter);
+                }
+
+                displayImages(filteredImages);
+            }
+
+            function displayImages(images) {
+                const grid = $('#images-grid');
+                const noImagesMsg = $('#no-images-message');
+                const loadingSpinner = $('#loading-spinner');
+
+                loadingSpinner.hide();
+
+                if (images.length === 0) {
+                    grid.empty();
+                    noImagesMsg.show();
+                    return;
+                }
+
+                noImagesMsg.hide();
+                grid.empty();
+
+                images.forEach(image => {
+                    const statusClass = getStatusClass(image.status);
+                    const statusText = getStatusText(image.status);
+                    const categoryText = getCategoryText(image.category);
+
+                    const imageCard = $(`
+                        <div class="image-card">
+                            <img src="${image.url}" alt="${image.description}" loading="lazy" onclick="previewImage(${image.id})">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">${image.description}</h6>
+                                    <span class="badge ${statusClass} status-pill">${statusText}</span>
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn btn-success btn-sm" onclick="approveImage(${image.id})" ${image.status === 'approved' ? 'disabled' : ''}>
+                                        <i class="bi bi-check-lg me-1"></i>OK
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectImage(${image.id})" ${image.status === 'rejected' ? 'disabled' : ''}>
+                                        <i class="bi bi-x-lg me-1"></i>NO
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" onclick="previewImage(${image.id})">
+                                        <i class="bi bi-eye me-1"></i>Görüntüle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                    grid.append(imageCard);
+                });
+            }
+
+            function getStatusClass(status) {
+                switch (status) {
+                    case 'approved': return 'bg-success';
+                    case 'rejected': return 'bg-danger';
+                    case 'pending': return 'bg-warning';
+                    default: return 'bg-secondary';
+                }
+            }
+
+            function getStatusText(status) {
+                switch (status) {
+                    case 'approved': return 'Onaylandı';
+                    case 'rejected': return 'Reddedildi';
+                    case 'pending': return 'Bekliyor';
+                    default: return 'Bilinmiyor';
+                }
+            }
+
+            function getCategoryText(category) {
+                switch (category) {
+                    case 'nature': return 'Doğa';
+                    case 'technology': return 'Teknoloji';
+                    case 'art': return 'Sanat';
+                    case 'business': return 'İş';
+                    case 'lifestyle': return 'Yaşam Tarzı';
+                    default: return category;
+                }
+            }
+
+            function generateImages() {
+                const category = $('#generate-category').val();
+                const count = parseInt($('#image-count').val());
+                const prompt = $('#prompt-input').val();
+
+                if (!category || !count) {
+                    showAlert('Lütfen kategori ve resim sayısını seçin.', 'danger');
+                    return;
+                }
+
+                // Show progress
+                $('#generation-progress').show();
+                $('#generate-btn').prop('disabled', true);
+
+                // Simulate generation process
+                simulateImageGeneration(category, count, prompt);
+            }
+
+            function simulateImageGeneration(category, count, prompt) {
+                let progress = 0;
+                const progressBar = $('#progress-bar');
+                const progressText = $('#progress-text');
+
+                const interval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress > 100) progress = 100;
+
+                    progressBar.css('width', progress + '%');
+                    progressText.text(`Üretiliyor... ${Math.round(progress)}%`);
+
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            completeGeneration(category, count, prompt);
+                        }, 500);
+                    }
+                }, 200);
+            }
+
+            function completeGeneration(category, count, prompt) {
+                $('#generation-progress').hide();
+                $('#generate-btn').prop('disabled', false);
+
+                // Create new images
+                const newImages = [];
+                for (let i = 0; i < count; i++) {
+                    const newImage = {
+                        id: Date.now() + i,
+                        url: `https://picsum.photos/400/300?random=${Date.now() + i}`,
+                        category: category,
+                        status: 'pending',
+                        description: prompt || `${getCategoryText(category)} resmi ${i + 1}`
+                    };
+                    newImages.push(newImage);
+                    currentImages.push(newImage);
+                }
+
+                // Update stats
+                stats.total += count;
+                stats.pending += count;
+                stats.generatedToday += count;
+                updateStats();
+
+                // Show generated images
+                showGeneratedImages(newImages);
+
+                showAlert(`${count} adet ${getCategoryText(category)} resmi başarıyla üretildi!`, 'success');
+
+                // Clear form
+                $('#generate-form')[0].reset();
+            }
+
+            function showGeneratedImages(images) {
+                const preview = $('#generated-images-preview');
+                const grid = $('#generated-grid');
+
+                grid.empty();
+                images.forEach(image => {
+                    const imageCard = $(`
+                        <div class="image-card">
+                            <img src="${image.url}" alt="${image.description}" loading="lazy" onclick="previewImage(${image.id})">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="card-title mb-0">${image.description}</h6>
+                                    <span class="badge ${getStatusClass(image.status)} status-pill">${getStatusText(image.status)}</span>
+                                </div>
+                                <div class="image-actions mt-2">
+                                    <button class="btn btn-success btn-sm" onclick="approveImage(${image.id})">
+                                        <i class="bi bi-check-lg me-1"></i>OK
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectImage(${image.id})">
+                                        <i class="bi bi-x-lg me-1"></i>NO
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    grid.append(imageCard);
+                });
+
+                preview.show();
+            }
+
+            function showAlert(message, type) {
+                const alert = $(`
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+
+                $('.main-container').prepend(alert);
+
+                setTimeout(() => {
+                    alert.alert('close');
+                }, 5000);
+            }
+
+            // Global functions for image actions
+            window.approveImage = function(id) {
+                const image = currentImages.find(img => img.id === id);
+                if (image) {
+                    image.status = 'approved';
+                    stats.approved++;
+                    stats.pending--;
+                    updateStats();
+                    loadImages();
+                    showAlert('Resim onaylandı!', 'success');
+                }
+            };
+
+            window.rejectImage = function(id) {
+                const image = currentImages.find(img => img.id === id);
+                if (image) {
+                    image.status = 'rejected';
+                    stats.pending--;
+                    updateStats();
+                    loadImages();
+                    showAlert('Resim reddedildi!', 'danger');
+                }
+            };
+
+            window.previewImage = function(id) {
+                const image = currentImages.find(img => img.id === id);
+                if (image) {
+                    $('#modalImage').attr('src', image.url);
+                    $('#modalTitle').text(image.description);
+                    $('#modalCategory').text(getCategoryText(image.category));
+                    $('#modalDescription').text(image.description);
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                    modal.show();
+                }
+            };
+        });
+    </script>
+</body>
+</html>
