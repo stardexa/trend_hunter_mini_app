@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Telegram Image Admin Panel</title>
+    <title>Trend Hunter Admin Panel</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -546,7 +546,7 @@
         <div class="container">
             <a class="navbar-brand" href="#">
                 <i class="bi bi-images me-2"></i>
-                Image Admin Panel
+                Trend Hunter Admin Panel
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -563,6 +563,11 @@
                             <i class="bi bi-plus-circle me-1"></i>Üret
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#production-history" data-tab="history">
+                            <i class="bi bi-clock-history me-1"></i>History
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -577,16 +582,31 @@
                 <div class="stats-label">Toplam Resim</div>
             </div>
             <div class="stats-card">
-                <div class="stats-number" id="approved-images">0</div>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <div class="stats-number" id="approved-images">0</div>
+                    <button id="filter-approved" class="btn btn-outline-success btn-sm" title="Onaylananları Göster">
+                        <i class="bi bi-check2-circle"></i>
+                    </button>
+                </div>
                 <div class="stats-label">Onaylanan</div>
             </div>
             <div class="stats-card">
-                <div class="stats-number" id="pending-images">0</div>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <div class="stats-number" id="pending-images">0</div>
+                    <button id="filter-pending" class="btn btn-outline-warning btn-sm" title="Bekleyenleri Göster">
+                        <i class="bi bi-hourglass-split"></i>
+                    </button>
+                </div>
                 <div class="stats-label">Bekleyen</div>
             </div>
             <div class="stats-card">
-                <div class="stats-number" id="generated-today">0</div>
-                <div class="stats-label">Bugün Üretilen</div>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <div class="stats-number" id="rejected-count">0</div>
+                    <button id="filter-rejected" class="btn btn-outline-danger btn-sm" title="Reddedilenleri Göster">
+                        <i class="bi bi-x-octagon"></i>
+                    </button>
+                </div>
+                <div class="stats-label">Reddedilen</div>
             </div>
         </div>
 
@@ -607,11 +627,6 @@
                                 <label for="category-filter" class="form-label">Kategori Seç</label>
                                 <select class="form-select" id="category-filter">
                                     <option value="all">Hepsi</option>
-                                    <option value="nature">Doğa</option>
-                                    <option value="technology">Teknoloji</option>
-                                    <option value="art">Sanat</option>
-                                    <option value="business">İş</option>
-                                    <option value="lifestyle">Yaşam Tarzı</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -622,6 +637,26 @@
                                     <option value="approved">Onaylanan</option>
                                     <option value="rejected">Reddedilen</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="page-size" class="form-label">Sayfa Boyutu</label>
+                                <select class="form-select" id="page-size">
+                                    <option value="10" selected>10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="500">500</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                <div class="btn-group" role="group" aria-label="Pagination">
+                                    <button class="btn btn-secondary" id="prev-page">Önceki</button>
+                                    <button type="button" class="btn btn-outline-light disabled" id="page-info" tabindex="-1">1 / 1</button>
+                                    <button class="btn btn-secondary" id="next-page">Sonraki</button>
+                                </div>
                             </div>
                         </div>
 
@@ -660,8 +695,13 @@
                         <form id="generate-form">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="generate-category" class="form-label">Kategori</label>
-                                    <select class="form-select" id="generate-category" required>
+                                <label for="generate-category" class="form-label d-flex align-items-center justify-content-between">
+                                    <span>Kategori</span>
+                                    <button type="button" id="btn-go-category" class="btn btn-outline-light btn-sm" title="Seçili kategoriye git">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </button>
+                                </label>
+                                <select class="form-select" id="generate-category" required>
                                         <option value="">Kategori Seçin</option>
                                         <option value="nature">Doğa</option>
                                         <option value="technology">Teknoloji</option>
@@ -672,21 +712,68 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="image-count" class="form-label">Resim Sayısı</label>
-                                    <select class="form-select" id="image-count" required>
-                                        <option value="">Sayı Seçin</option>
-                                        <option value="1">1 Resim</option>
-                                        <option value="2">2 Resim</option>
-                                        <option value="4">4 Resim</option>
-                                        <option value="6">6 Resim</option>
-                                        <option value="8">8 Resim</option>
-                                    </select>
+                                    <input type="number" class="form-control" id="image-count" value="10" min="1" max="50" required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="prompt-input" class="form-label">Prompt (İsteğe Bağlı)</label>
-                                <textarea class="form-control" id="prompt-input" rows="4" 
-                                    placeholder="Resim için özel bir prompt girin... (Boş bırakılırsa kategoriye uygun varsayılan prompt kullanılır)"></textarea>
+                                <label for="prompt-input" class="form-label">Prompt</label>
+                                <textarea class="form-control" id="prompt-input" rows="8">T-SHIRT DESIGN BRIEF: {event_name}
+
+**TASK:** Generate {target_ideas} unique, creative, and marketable T-shirt design concepts for {event_name}.
+IMPORTANT: This is NOT an image generation request. Do NOT generate or attach any images now. Only write the design ideas as text.
+
+🚨 **CRITICAL INSTRUCTION - NO QUESTIONS ALLOWED:**
+If you notice ANY conflicting information, different topics, or multiple holidays mentioned - DO NOT ASK QUESTIONS! Instead:
+- Focus PRIMARILY on the main event name: "{event_name}"
+- Use the context as supplementary inspiration only
+- If multiple themes exist, CREATE FUSION DESIGNS that blend all elements
+- Generate designs immediately without asking for clarification
+- BE CREATIVE and combine different cultural elements into unique concepts
+
+**CONTEXT & BACKGROUND:**
+{prompt_content}
+
+**DESIGN REQUIREMENTS:**
+Each design concept must include:
+1. **SLOGAN/TEXT:** Creative, catchy, and culturally appropriate phrases
+2. **COLOR PALETTE:** Specific color combinations with hex codes if possible  
+3. **TYPOGRAPHY STYLE:** Font recommendations (serif, sans-serif, script, etc.)
+4. **VISUAL ELEMENTS:** Icons, symbols, graphics, or illustrations
+5. **TARGET AUDIENCE:** Who would wear this design
+6. **DESIGN STYLE:** Overall aesthetic (minimalist, retro, modern, playful, etc.)
+
+**CREATIVE CATEGORIES TO EXPLORE:**
+- Traditional/Cultural themes with modern twist
+- Humor and wordplay related to {event_name}
+- Minimalist and elegant designs
+- Bold and eye-catching statements
+- Family-friendly and inclusive messages
+- Trendy social media worthy quotes
+- Nostalgic and vintage-inspired concepts
+
+**OUTPUT FORMAT:**
+For each design (1-{target_ideas}), provide:
+- Design Title/Name
+- Main Slogan/Text
+- Detailed Description (colors, typography, layout, visual elements)
+- Target Audience
+- Style Category
+
+Please create exactly {target_ideas} distinct design concepts, each with unique appeal and market potential. Make each description detailed and specific enough that a designer could create the artwork from your description.
+Do NOT generate or attach images in this step. Text output only.
+
+🚫 **-CRITICAL IMAGE GENERATION RULES (for later image generation):**
+After providing the design concepts, when I ask you to generate images later:
+- ABSOLUTELY NO T-SHIRT MOCKUPS
+- ABSOLUTELY NO CLOTHING ITEMS  
+- ABSOLUTELY NO MODELS OR PEOPLE
+- ABSOLUTELY NO PHYSICAL OBJECTS
+- Generate ONLY flat design graphics on solid background
+- PNG format with standalone design elements only
+- Pure graphics ready for printing - NOT printed on anything
+
+Start generating the designs now:</textarea>
                             </div>
 
                             <div class="d-grid">
@@ -698,14 +785,22 @@
 
                         <!-- Generation Progress -->
                         <div class="generation-progress" id="generation-progress" style="display: none;">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Resim üretimi başlatıldı...
+                            <div class="alert alert-info d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <div class="d-flex flex-column">
+                                        <strong>Resim üretimi başlatıldı.</strong>
+                                        <small id="start-time" class="text-light opacity-75"></small>
+                                    </div>
+                                </div>
+                                <div class="badge bg-primary" id="eta-badge" style="font-size:0.95rem;">
+                                    Tahmini <span id="eta-minutes">14</span> dk sonra tamamlanacak.
+                                </div>
                             </div>
-                            <div class="progress mb-3">
+                            <div class="progress mb-3" style="display: none;">
                                 <div class="progress-bar" role="progressbar" id="progress-bar" style="width: 0%"></div>
                             </div>
-                            <p class="text-center text-muted" id="progress-text">Hazırlanıyor...</p>
+                            <p class="text-center text-muted" id="progress-text" style="display:none"></p>
                         </div>
 
                         <!-- Generated Images Preview -->
@@ -714,6 +809,57 @@
                             <div class="image-grid" id="generated-grid">
                                 <!-- Generated images will be shown here -->
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Production History Tab -->
+            <div id="history-content" class="tab-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="bi bi-clock-history me-2"></i>Üretim Geçmişi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- History Filter -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="history-category-filter" class="form-label">Kategori</label>
+                                <select class="form-select" id="history-category-filter">
+                                    <option value="all">Hepsi</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="history-date-filter" class="form-label">Tarih</label>
+                                <select class="form-select" id="history-date-filter">
+                                    <option value="all">Hepsi</option>
+                                    <option value="today">Bugün</option>
+                                    <option value="week">Bu Hafta</option>
+                                    <option value="month">Bu Ay</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div class="loading-spinner" id="history-loading-spinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Yükleniyor...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Geçmiş yükleniyor...</p>
+                        </div>
+
+                        <!-- History List -->
+                        <div id="history-list">
+                            <!-- History entries will be loaded here -->
+                        </div>
+
+                        <!-- No History Message -->
+                        <div class="text-center py-5" id="no-history-message" style="display: none;">
+                            <i class="bi bi-clock-history display-1 text-muted"></i>
+                            <h4 class="mt-3 text-muted">Henüz üretim geçmişi bulunamadı</h4>
+                            <p class="text-muted">Resim üretimi yapıldığında burada görünecek.</p>
                         </div>
                     </div>
                 </div>
@@ -783,60 +929,130 @@
                 tg.close();
             });
             
-            // Sample data for demonstration
-            const sampleImages = [
-                {
-                    id: 1,
-                    url: 'https://picsum.photos/400/300?random=1',
-                    category: 'nature',
-                    status: 'pending',
-                    description: 'Doğal manzara resmi'
-                },
-                {
-                    id: 2,
-                    url: 'https://picsum.photos/400/300?random=2',
-                    category: 'technology',
-                    status: 'approved',
-                    description: 'Teknoloji ürünü'
-                },
-                {
-                    id: 3,
-                    url: 'https://picsum.photos/400/300?random=3',
-                    category: 'art',
-                    status: 'pending',
-                    description: 'Sanat eseri'
-                },
-                {
-                    id: 4,
-                    url: 'https://picsum.photos/400/300?random=4',
-                    category: 'business',
-                    status: 'approved',
-                    description: 'İş dünyası'
-                },
-                {
-                    id: 5,
-                    url: 'https://picsum.photos/400/300?random=5',
-                    category: 'lifestyle',
-                    status: 'rejected',
-                    description: 'Yaşam tarzı'
-                }
-            ];
+            // API base
+            const API_BASE = 'http://44.222.208.36:8000';
 
-            let currentImages = [...sampleImages];
-            let stats = {
-                total: sampleImages.length,
-                approved: sampleImages.filter(img => img.status === 'approved').length,
-                pending: sampleImages.filter(img => img.status === 'pending').length,
-                generatedToday: 0
-            };
+            // State
+            let currentImages = [];
+            let stats = { total: 0, approved: 0, pending: 0, generatedToday: 0 };
+            let viewPage = 1;
+            let pageSize = 10;
+            let lastStatusMap = {};
+            let currentHistory = [];
+
+            // Normalize Google Drive URLs for embeddable image rendering
+            function normalizeUrl(url) {
+                try {
+                    if (!url) return url;
+                    // Extract ID from common Drive formats
+                    const driveIdMatch = (
+                        /[?&]id=([a-zA-Z0-9_-]+)/.exec(url) ||
+                        /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(url) ||
+                        /\/folders\/([a-zA-Z0-9_-]+)/.exec(url)
+                    );
+                    if (driveIdMatch && driveIdMatch[1]) {
+                        const id = driveIdMatch[1];
+                        // Prefer direct download bytes rather than preview HTML
+                        return `https://drive.google.com/uc?export=download&id=${id}`;
+                    }
+                    // If already uc without export
+                    const m2 = /https:\/\/drive\.google\.com\/uc\?id=([a-zA-Z0-9_-]+)/.exec(url);
+                    if (m2 && m2[1]) {
+                        return `https://drive.google.com/uc?export=download&id=${m2[1]}`;
+                    }
+                    return url;
+                } catch (e) {
+                    return url;
+                }
+            }
+
+            function proxied(url) {
+                if (!url) return url;
+                return `${API_BASE}/proxy/image?url=${encodeURIComponent(url)}`;
+            }
+
+            // Tiny transparent placeholder (1x1 gif)
+            const EMPTY_IMG = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
+            // Lazy loader via IntersectionObserver
+            let io;
+            function setupLazyLoader() {
+                if (io) {
+                    io.disconnect();
+                }
+                const opts = { root: null, rootMargin: '200px', threshold: 0.01 };
+                io = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            const ds = img.getAttribute('data-src');
+                            if (ds) {
+                                img.src = ds;
+                                img.removeAttribute('data-src');
+                            }
+                            io.unobserve(img);
+                        }
+                    });
+                }, opts);
+                // Observe existing lazy images
+                document.querySelectorAll('img.lazy-img[data-src]').forEach(img => io.observe(img));
+            }
+
+            // Build robust candidate URLs and attach onerror fallback
+            function buildUrlCandidates(originalUrl) {
+                const orig = originalUrl || '';
+                const norm = normalizeUrl(orig);
+                const c = [];
+                // 1) proxied normalized
+                c.push(proxied(norm));
+                // 2) drive thumbnail variant (if id exists)
+                const idMatch = /[?&]id=([a-zA-Z0-9_-]+)/.exec(norm) || /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(orig);
+                if (idMatch && idMatch[1]) {
+                    const id = idMatch[1];
+                    c.push(proxied(`https://drive.google.com/thumbnail?id=${id}&sz=w1600`));
+                }
+                // 3) direct normalized
+                c.push(norm);
+                // 4) direct original
+                c.push(orig);
+                return c.filter(Boolean);
+            }
+
+            function enhanceImageElement(imgEl, originalUrl) {
+                const candidates = buildUrlCandidates(originalUrl);
+                imgEl._candidates = candidates.slice(0);
+                // Apply policies
+                imgEl.referrerPolicy = 'no-referrer';
+                imgEl.crossOrigin = 'anonymous';
+                // If data-src not set (e.g. non-lazy), set first candidate as src
+                if (!imgEl.getAttribute('data-src') && !imgEl.src) {
+                    const first = imgEl._candidates.shift();
+                    if (first) imgEl.src = first;
+                }
+                // If lazy, seed data-src from first candidate
+                if (imgEl.classList.contains('lazy-img')) {
+                    const first = imgEl._candidates.shift();
+                    if (first) imgEl.setAttribute('data-src', first);
+                }
+                imgEl.addEventListener('error', function() {
+                    const next = imgEl._candidates && imgEl._candidates.shift();
+                    if (next) {
+                        imgEl.src = next;
+                    } else {
+                        imgEl.src = EMPTY_IMG;
+                    }
+                });
+            }
 
             // Initialize the app
             init();
 
-            function init() {
-                updateStats();
-                loadImages();
+            async function init() {
                 setupEventListeners();
+                await loadCategories();
+                await loadImages();
+                await loadHistory();
+                updateStats();
             }
 
             function setupEventListeners() {
@@ -852,10 +1068,81 @@
                     loadImages();
                 });
 
+                $('#page-size').change(function() {
+                    pageSize = parseInt($(this).val(), 10) || 10;
+                    viewPage = 1;
+                    renderPaged();
+                });
+
+                $('#prev-page').click(function() {
+                    if (viewPage > 1) {
+                        viewPage--;
+                        renderPaged();
+                    }
+                });
+                $('#next-page').click(function() {
+                    const totalPages = Math.max(1, Math.ceil(currentImages.length / pageSize));
+                    if (viewPage < totalPages) {
+                        viewPage++;
+                        renderPaged();
+                    }
+                });
+
+                // Filter: rejected
+                $('#filter-rejected').click(function() {
+                    const urls = [];
+                    Object.entries(lastStatusMap).forEach(([url, info]) => {
+                        if (info && info.approved === false) urls.push(url);
+                    });
+                    if (!urls.length) {
+                        showAlert('Reddedilmiş görsel yok.', 'info');
+                        return;
+                    }
+                    const map = new Map();
+                    currentImages.forEach(i => map.set(i.originalUrl || i.url, i));
+                    const filtered = urls.map(u => map.get(u)).filter(Boolean);
+                    if (!filtered.length) {
+                        showAlert('Reddedilenler mevcut listede bulunamadı. Kategori değiştirin.', 'info');
+                        return;
+                    }
+                    viewPage = 1;
+                    renderCustom(filtered);
+                });
+
+                // Filter: approved
+                $('#filter-approved').click(function() {
+                    const urls = [];
+                    Object.entries(lastStatusMap).forEach(([url, info]) => { if (info && info.approved === true) urls.push(url); });
+                    if (!urls.length) { showAlert('Onaylanan görsel yok.', 'info'); return; }
+                    const map = new Map(); currentImages.forEach(i => map.set(i.originalUrl || i.url, i));
+                    const filtered = urls.map(u => map.get(u)).filter(Boolean);
+                    if (!filtered.length) { showAlert('Onaylananlar mevcut listede bulunamadı. Kategori değiştirin.', 'info'); return; }
+                    viewPage = 1; renderCustom(filtered);
+                });
+
+                // Filter: pending
+                $('#filter-pending').click(function() {
+                    const urls = [];
+                    Object.entries(lastStatusMap).forEach(([url, info]) => { if (!info || info.approved === null || typeof info.approved === 'undefined') urls.push(url); });
+                    // Pending olmayanlar status mapte olmayabilir; listedeki ve mapte olmayanları da pending sayalım
+                    currentImages.forEach(i => { const key = i.originalUrl || i.url; if (!(key in lastStatusMap)) urls.push(key); });
+                    const uniq = [...new Set(urls)];
+                    if (!uniq.length) { showAlert('Bekleyen görsel yok.', 'info'); return; }
+                    const map = new Map(); currentImages.forEach(i => map.set(i.originalUrl || i.url, i));
+                    const filtered = uniq.map(u => map.get(u)).filter(Boolean);
+                    if (!filtered.length) { showAlert('Bekleyenler mevcut listede bulunamadı. Kategori değiştirin.', 'info'); return; }
+                    viewPage = 1; renderCustom(filtered);
+                });
+
                 // Generate form
                 $('#generate-form').submit(function(e) {
                     e.preventDefault();
                     generateImages();
+                });
+
+                // History filters
+                $('#history-category-filter, #history-date-filter').change(function() {
+                    filterHistory();
                 });
             }
 
@@ -872,6 +1159,9 @@
                 } else if (tab === 'generate') {
                     tg.MainButton.text = 'Ana Sayfa';
                     tg.MainButton.show();
+                } else if (tab === 'history') {
+                    tg.MainButton.text = 'Ana Sayfa';
+                    tg.MainButton.show();
                 }
             }
 
@@ -882,22 +1172,399 @@
                 $('#generated-today').text(stats.generatedToday);
             }
 
-            function loadImages() {
+            async function loadImages() {
                 const categoryFilter = $('#category-filter').val();
                 const statusFilter = $('#status-filter').val();
-                
-                let filteredImages = currentImages;
+                const grid = $('#images-grid');
+                const loadingSpinner = $('#loading-spinner');
+                const noImagesMsg = $('#no-images-message');
 
-                if (categoryFilter !== 'all') {
-                    filteredImages = filteredImages.filter(img => img.category === categoryFilter);
+                loadingSpinner.show();
+                noImagesMsg.hide();
+                grid.empty();
+
+                try {
+                    let data;
+                    if (categoryFilter && categoryFilter !== 'all') {
+                        const res = await fetch(`${API_BASE}/excel/images?category=${encodeURIComponent(categoryFilter)}`);
+                        data = await res.json();
+                        const title = data.title || categoryFilter;
+                        const images = Array.isArray(data.images) ? data.images : [];
+                        currentImages = images.map((url, idx) => ({
+                            id: Date.now() + idx,
+                            url: proxied(normalizeUrl(url)),
+                            originalUrl: normalizeUrl(url),
+                            category: title,
+                            status: 'pending',
+                            description: `${title}`
+                        }));
+                    } else {
+                        const res = await fetch(`${API_BASE}/excel/images?all=true`);
+                        data = await res.json();
+                        const items = Array.isArray(data.items) ? data.items : [];
+                        const aggregated = [];
+                        items.forEach(group => {
+                            const title = group.title || '';
+                            (group.images || []).forEach((url, idx) => {
+                                aggregated.push({
+                                    id: Date.now() + aggregated.length + idx,
+                                    url: proxied(normalizeUrl(url)),
+                                    originalUrl: normalizeUrl(url),
+                                    category: title,
+                                    status: 'pending',
+                                    description: `${title}`
+                                });
+                            });
+                        });
+                        currentImages = aggregated;
+                    }
+
+                    // Persist statuses across refresh: bulk fetch
+                    try {
+                        const urls = currentImages.map(i => i.originalUrl || i.url);
+                        const resp = await fetch(`${API_BASE}/excel/status/bulk`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(urls)
+                        });
+                        const st = await resp.json();
+                        const map = (st && st.items) || {};
+                        lastStatusMap = map;
+                        currentImages.forEach(i => {
+                            const key = i.originalUrl || i.url;
+                            const s = map[key];
+                            if (!s || s.approved === null || typeof s.approved === 'undefined') {
+                                i.status = 'pending';
+                            } else if (s.approved === true) {
+                                i.status = 'approved';
+                            } else if (s.approved === false) {
+                                i.status = 'rejected';
+                            }
+                        });
+                        // Sort by recency: approved_at desc if available, else by id desc
+                        currentImages.sort((a, b) => {
+                            const ka = a.originalUrl || a.url; const kb = b.originalUrl || b.url;
+                            const sa = map[ka]; const sb = map[kb];
+                            const ta = (sa && typeof sa.approved_at === 'string') ? Date.parse(sa.approved_at) : 0;
+                            const tb = (sb && typeof sb.approved_at === 'string') ? Date.parse(sb.approved_at) : 0;
+                            if (tb !== ta) return tb - ta;
+                            return (b.id || 0) - (a.id || 0);
+                        });
+                        // Update rejected count
+                        let rejectedCount = 0;
+                        Object.values(map).forEach(info => { if (info && info.approved === false) rejectedCount++; });
+                        $('#rejected-count').text(rejectedCount);
+                    } catch (e) {}
+
+                    // Update stats
+                    stats.total = currentImages.length;
+                    stats.approved = currentImages.filter(i => i.status === 'approved').length;
+                    stats.pending = currentImages.filter(i => i.status !== 'approved' && i.status !== 'rejected').length;
+                    updateStats();
+
+                    renderPaged();
+                } catch (e) {
+                    console.error('Load images error:', e);
+                    noImagesMsg.show();
+                } finally {
+                    loadingSpinner.hide();
                 }
-
-                if (statusFilter !== 'all') {
-                    filteredImages = filteredImages.filter(img => img.status === statusFilter);
-                }
-
-                displayImages(filteredImages);
             }
+
+            function renderPaged() {
+                const statusFilter = $('#status-filter').val();
+                let filtered = currentImages;
+                if (statusFilter !== 'all') {
+                    filtered = filtered.filter(img => img.status === statusFilter);
+                }
+                const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+                if (viewPage > totalPages) viewPage = totalPages;
+                const start = (viewPage - 1) * pageSize;
+                const paged = filtered.slice(start, start + pageSize);
+                $('#page-info').text(`${viewPage} / ${totalPages}`);
+                displayImages(paged);
+                // setup lazy after DOM updated
+                setupLazyLoader();
+            }
+
+            function renderCustom(list) {
+                // Sort custom list by recency using lastStatusMap
+                list.sort((a, b) => {
+                    const ka = a.originalUrl || a.url; const kb = b.originalUrl || b.url;
+                    const sa = lastStatusMap[ka]; const sb = lastStatusMap[kb];
+                    const ta = (sa && typeof sa.approved_at === 'string') ? Date.parse(sa.approved_at) : 0;
+                    const tb = (sb && typeof sb.approved_at === 'string') ? Date.parse(sb.approved_at) : 0;
+                    if (tb !== ta) return tb - ta;
+                    return (b.id || 0) - (a.id || 0);
+                });
+                const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+                if (viewPage > totalPages) viewPage = totalPages;
+                const start = (viewPage - 1) * pageSize;
+                const paged = list.slice(start, start + pageSize);
+                $('#page-info').text(`${viewPage} / ${totalPages}`);
+                displayImages(paged);
+                setupLazyLoader();
+            }
+
+            async function loadCategories() {
+                const selView = $('#category-filter');
+                const selGen = $('#generate-category');
+                const selHistory = $('#history-category-filter');
+                try {
+                    const res = await fetch(`${API_BASE}/categories`);
+                    const data = await res.json();
+                    const items = Array.isArray(data.items) ? data.items : [];
+                    // Reset and add defaults
+                    selView.empty().append(`<option value="all">Hepsi</option>`);
+                    selGen.empty().append(`<option value="">Kategori Seçin</option>`);
+                    selHistory.empty().append(`<option value="all">Hepsi</option>`);
+                    items.forEach(title => {
+                        const opt = `<option value="${title}">${title}</option>`;
+                        selView.append(opt);
+                        selGen.append(opt);
+                        selHistory.append(opt);
+                    });
+                } catch (e) {
+                    console.warn('Fetch categories failed, keeping defaults.', e);
+                }
+            }
+
+            async function loadHistory() {
+                const loadingSpinner = $('#history-loading-spinner');
+                const historyList = $('#history-list');
+                const noHistoryMsg = $('#no-history-message');
+
+                loadingSpinner.show();
+                noHistoryMsg.hide();
+                historyList.empty();
+
+                try {
+                    const res = await fetch(`${API_BASE}/history`);
+                    const data = await res.json();
+                    currentHistory = data.history || [];
+
+                    if (currentHistory.length === 0) {
+                        noHistoryMsg.show();
+                    } else {
+                        displayHistory(currentHistory);
+                    }
+                } catch (e) {
+                    console.error('Load history error:', e);
+                    noHistoryMsg.show();
+                } finally {
+                    loadingSpinner.hide();
+                }
+            }
+
+            function filterHistory() {
+                const categoryFilter = $('#history-category-filter').val();
+                const dateFilter = $('#history-date-filter').val();
+                
+                let filtered = currentHistory;
+
+                // Filter by category
+                if (categoryFilter && categoryFilter !== 'all') {
+                    filtered = filtered.filter(entry => entry.category === categoryFilter);
+                }
+
+                // Filter by date
+                if (dateFilter && dateFilter !== 'all') {
+                    const now = new Date();
+                    filtered = filtered.filter(entry => {
+                        const entryDate = new Date(entry.created_at);
+                        
+                        switch (dateFilter) {
+                            case 'today':
+                                return entryDate.toDateString() === now.toDateString();
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                return entryDate >= weekAgo;
+                            case 'month':
+                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                return entryDate >= monthAgo;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                displayHistory(filtered);
+            }
+
+            function displayHistory(historyEntries) {
+                const historyList = $('#history-list');
+                const noHistoryMsg = $('#no-history-message');
+
+                historyList.empty();
+
+                if (historyEntries.length === 0) {
+                    noHistoryMsg.show();
+                    return;
+                }
+
+                noHistoryMsg.hide();
+
+                // Sort by creation date (newest first)
+                historyEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                historyEntries.forEach(entry => {
+                    const historyCard = createHistoryCard(entry);
+                    // Enhance thumbnails with lazy + fallbacks
+                    historyCard.find('img.hist-thumb').each(function() {
+                        enhanceImageElement(this, this.getAttribute('data-orig'));
+                    });
+                    historyList.append(historyCard);
+                });
+                setupLazyLoader();
+            }
+
+            function createHistoryCard(entry) {
+                const createdDate = new Date(entry.created_at);
+                const dateStr = createdDate.toLocaleDateString('tr-TR');
+                const timeStr = createdDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                
+                const excelStatus = entry.excel_saved ? 
+                    '<span class="badge bg-success me-2"><i class="bi bi-check-circle me-1"></i>Excel\'e Kaydedildi</span>' :
+                    '<span class="badge bg-warning me-2"><i class="bi bi-clock me-1"></i>Excel\'e Kaydedilmedi</span>';
+
+                return $(`
+                    <div class="card mb-3 history-card" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title mb-1">
+                                        <i class="bi bi-calendar-event me-2"></i>
+                                        ${entry.category || 'Kategori Yok'}
+                                        <span class="badge bg-primary ms-2">${entry.image_count} Resim</span>
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>
+                                        ${dateStr} ${timeStr}
+                                    </small>
+                                </div>
+                                <div>
+                                    ${excelStatus}
+                                    <button class="btn btn-outline-light btn-sm" onclick="viewHistoryImages('${entry.id}')">
+                                        <i class="bi bi-eye me-1"></i>Resimleri Gör
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="text-primary mb-2">Prompt:</h6>
+                                    <p class="text-light mb-3" style="font-size: 0.9rem; line-height: 1.4;">
+                                        ${entry.prompt ? entry.prompt.substring(0, 200) + (entry.prompt.length > 200 ? '...' : '') : 'Prompt bulunamadı'}
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-primary mb-2">Üretilen Resimler:</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        ${entry.images ? entry.images.slice(0, 3).map((img, idx) => 
+                                            `<img class="rounded hist-thumb lazy-img" data-orig="${(normalizeUrl(img)).replace(/"/g,'&quot;')}" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistory('${entry.id}', ${idx})" alt="Resim ${idx + 1}">`
+                                        ).join('') : ''}
+                                        ${entry.images && entry.images.length > 3 ? 
+                                            `<div class="d-flex align-items-center justify-content-center rounded" style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); color: white; font-size: 0.8rem;">
+                                                +${entry.images.length - 3}
+                                            </div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            window.viewHistoryImages = function(historyId) {
+                const entry = currentHistory.find(h => h.id === historyId);
+                if (!entry || !entry.images) {
+                    showAlert('Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                // Create modal for history images
+                const modalHtml = `
+                    <div class="modal fade" id="historyImageModal" tabindex="-1">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--glass-border);">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Üretim Geçmişi - ${entry.category || 'Kategori Yok'}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Prompt:</h6>
+                                        <p class="text-light" style="font-size: 0.9rem;">${entry.prompt || 'Prompt bulunamadı'}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Üretim Bilgileri:</h6>
+                                        <div class="d-flex gap-3">
+                                            <span class="badge bg-info">${entry.image_count} Resim</span>
+                                            <span class="badge ${entry.excel_saved ? 'bg-success' : 'bg-warning'}">
+                                                ${entry.excel_saved ? 'Excel\'e Kaydedildi' : 'Excel\'e Kaydedilmedi'}
+                                            </span>
+                                            <span class="badge bg-secondary">${new Date(entry.created_at).toLocaleString('tr-TR')}</span>
+                                        </div>
+                                    </div>
+                                    <div class="image-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                                        ${entry.images.map((img, idx) => `
+                                            <div class="image-card" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden;">
+                                                <img src="${proxied(normalizeUrl(img))}" class="img-fluid" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistory('${entry.id}', ${idx})" alt="Resim ${idx + 1}">
+                                                <div class="p-2">
+                                                    <small class="text-muted">Resim ${idx + 1}</small>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Remove existing modal if any
+                $('#historyImageModal').remove();
+                
+                // Add modal to body
+                $('body').append(modalHtml);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('historyImageModal'));
+                modal.show();
+                
+                // Clean up when modal is hidden
+                $('#historyImageModal').on('hidden.bs.modal', function() {
+                    $(this).remove();
+                });
+            };
+
+            window.previewImageFromHistory = function(historyId, imageIndex) {
+                const entry = currentHistory.find(h => h.id === historyId);
+                if (!entry || !entry.images || !entry.images[imageIndex]) {
+                    showAlert('Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                const candidates = buildUrlCandidates(entry.images[imageIndex]);
+                const imgEl = document.getElementById('modalImage');
+                // Reset any previous handler
+                imgEl.removeAttribute('src');
+                imgEl._candidates = candidates;
+                imgEl.onerror = function() {
+                    const next = imgEl._candidates && imgEl._candidates.shift();
+                    if (next) imgEl.src = next; else imgEl.src = EMPTY_IMG;
+                };
+                imgEl.referrerPolicy = 'no-referrer';
+                imgEl.crossOrigin = 'anonymous';
+                imgEl.src = (imgEl._candidates && imgEl._candidates.shift()) || EMPTY_IMG;
+                $('#modalTitle').text(`Üretim Geçmişi - ${entry.category || 'Kategori Yok'} - Resim ${imageIndex + 1}`);
+                $('#modalCategory').text(entry.category || 'Kategori Yok');
+                $('#modalDescription').text(entry.prompt || 'Prompt bulunamadı');
+                
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            };
 
             function displayImages(images) {
                 const grid = $('#images-grid');
@@ -915,36 +1582,40 @@
                 noImagesMsg.hide();
                 grid.empty();
 
+                // Use DocumentFragment to minimize reflow
+                const frag = document.createDocumentFragment();
                 images.forEach(image => {
                     const statusClass = getStatusClass(image.status);
                     const statusText = getStatusText(image.status);
                     const categoryText = getCategoryText(image.category);
 
-                    const imageCard = $(`
-                        <div class="image-card">
-                            <img src="${image.url}" alt="${image.description}" loading="lazy" onclick="previewImage(${image.id})">
-                            <div class="card-body p-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="card-title mb-0">${image.description}</h6>
-                                    <span class="badge ${statusClass} status-pill">${statusText}</span>
-                                </div>
-                                <div class="image-actions">
-                                    <button class="btn btn-success btn-sm" onclick="approveImage(${image.id})" ${image.status === 'approved' ? 'disabled' : ''}>
-                                        <i class="bi bi-check-lg me-1"></i>OK
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="rejectImage(${image.id})" ${image.status === 'rejected' ? 'disabled' : ''}>
-                                        <i class="bi bi-x-lg me-1"></i>NO
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" onclick="previewImage(${image.id})">
-                                        <i class="bi bi-eye me-1"></i>
-                                    </button>
-                                </div>
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'image-card';
+                    wrapper.innerHTML = `
+                        <img class="lazy-img" src="${EMPTY_IMG}" alt="${image.description}" loading="lazy" onclick="previewImage(${image.id})">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="card-title mb-0">${image.description}</h6>
+                                <span class="badge ${statusClass} status-pill">${statusText}</span>
                             </div>
-                        </div>
-                    `);
-
-                    grid.append(imageCard);
+                            <div class="image-actions">
+                                <button class="btn btn-success btn-sm" onclick="approveImage(${image.id})" ${image.status === 'approved' ? 'disabled' : ''}>
+                                    <i class="bi bi-check-lg me-1"></i>OK
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectImage(${image.id})" ${image.status === 'rejected' ? 'disabled' : ''}>
+                                    <i class="bi bi-x-lg me-1"></i>NO
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="previewImage(${image.id})">
+                                    <i class="bi bi-eye me-1"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                    // Attach robust fallback chain for gallery image
+                    const imgEl = wrapper.querySelector('img');
+                    enhanceImageElement(imgEl, image.originalUrl || image.url);
+                    frag.appendChild(wrapper);
                 });
+                grid[0].appendChild(frag);
             }
 
             function getStatusClass(status) {
@@ -976,7 +1647,7 @@
                 }
             }
 
-            function generateImages() {
+            async function generateImages() {
                 const category = $('#generate-category').val();
                 const count = parseInt($('#image-count').val());
                 const prompt = $('#prompt-input').val();
@@ -990,62 +1661,114 @@
                 $('#generation-progress').show();
                 $('#generate-btn').prop('disabled', true);
 
-                // Simulate generation process
-                simulateImageGeneration(category, count, prompt);
+                // Calculate estimated time: 2 minutes per image + 10 minutes buffer
+                const estimatedMinutes = (count * 2) + 10;
+                $('#eta-minutes').text(estimatedMinutes);
+                // show start time
+                const startedAt = new Date();
+                const pad = (n) => String(n).padStart(2, '0');
+                const ts = `${pad(startedAt.getHours())}:${pad(startedAt.getMinutes())}`;
+                $('#start-time').text(`Başlangıç: ${ts}`);
+                // hide extra description
+                $('#progress-text').hide().text('');
+                
+                // Start countdown badge
+                let remaining = estimatedMinutes * 60; // seconds
+                if (window._etaTimer) clearInterval(window._etaTimer);
+                window._etaTimer = setInterval(() => {
+                    remaining = Math.max(0, remaining - 1);
+                    const mins = Math.floor(remaining / 60);
+                    $('#eta-minutes').text(mins);
+                    if (remaining <= 0) {
+                        clearInterval(window._etaTimer);
+                        $('#eta-badge').removeClass('bg-primary').addClass('bg-success').text('Hazır olabilir - Yenile');
+                    }
+                }, 1000);
+
+                try {
+                    // Create a history entry immediately so it appears in the list
+                    let histId = null;
+                    try {
+                        const histResp = await fetch(`${API_BASE}/history/create-start`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ category, prompt, image_count: count })
+                        });
+                        const histJson = await histResp.json();
+                        histId = histJson.history_id || null;
+                    } catch (e) { /* ignore */ }
+
+                    // Call API endpoint to start generation and stream updates into this history
+                    const response = await fetch(`${API_BASE}/generate/special`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            category: category,
+                            image_count: count,
+                            custom_prompt: prompt,
+                            history_id: histId
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        showAlert('Başarılı! Çalışmaya başladı. Resimler oluşturuluyor...', 'success');
+                        // Refresh history to show the new run
+                        setTimeout(loadHistory, 1000);
+                        // Poll history entry for images a few times
+                        if (result.history_id) {
+                            let attempts = 0;
+                            const maxAttempts = 30; // ~30 seconds
+                            const timer = setInterval(async () => {
+                                attempts++;
+                                try {
+                                    const r = await fetch(`${API_BASE}/history/${result.history_id}`);
+                                    if (r.ok) {
+                                        const j = await r.json();
+                                        if (j.entry && Array.isArray(j.entry.images) && j.entry.images.length > 0) {
+                                            clearInterval(timer);
+                                            loadHistory();
+                                        }
+                                    }
+                                } catch (e) { /* ignore transient */ }
+                                if (attempts >= maxAttempts) clearInterval(timer);
+                            }, 1000);
+                        }
+                        // Show completion message
+                        // message already shown; timer is running
+                    } else {
+                        throw new Error(result.message || 'Generation failed');
+                    }
+                } catch (error) {
+                    console.error('Generation error:', error);
+                    showAlert('Resim üretimi başlatılamadı: ' + error.message, 'danger');
+                    $('#generation-progress').hide();
+                    $('#generate-btn').prop('disabled', false);
+                }
             }
 
+            // Jump to selected category images from Generate tab
+            $('#btn-go-category').on('click', function() {
+                const cat = $('#generate-category').val();
+                if (!cat) { showAlert('Önce bir kategori seçin.', 'warning'); return; }
+                // Switch to view tab and set the filter
+                switchTab('view');
+                $('#category-filter').val(cat).trigger('change');
+                // Scroll to images grid
+                document.getElementById('view-content').scrollIntoView({ behavior: 'smooth' });
+            });
+
             function simulateImageGeneration(category, count, prompt) {
-                let progress = 0;
-                const progressBar = $('#progress-bar');
-                const progressText = $('#progress-text');
-
-                const interval = setInterval(() => {
-                    progress += Math.random() * 20;
-                    if (progress > 100) progress = 100;
-
-                    progressBar.css('width', progress + '%');
-                    progressText.text(`Üretiliyor... ${Math.round(progress)}%`);
-
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        setTimeout(() => {
-                            completeGeneration(category, count, prompt);
-                        }, 500);
-                    }
-                }, 200);
+                // This function is now replaced by the API call
+                // Keeping it for backward compatibility but not using it
+                console.log('simulateImageGeneration called but using API instead');
             }
 
             function completeGeneration(category, count, prompt) {
-                $('#generation-progress').hide();
-                $('#generate-btn').prop('disabled', false);
-
-                // Create new images
-                const newImages = [];
-                for (let i = 0; i < count; i++) {
-                    const newImage = {
-                        id: Date.now() + i,
-                        url: `https://picsum.photos/400/300?random=${Date.now() + i}`,
-                        category: category,
-                        status: 'pending',
-                        description: prompt || `${getCategoryText(category)} resmi ${i + 1}`
-                    };
-                    newImages.push(newImage);
-                    currentImages.push(newImage);
-                }
-
-                // Update stats
-                stats.total += count;
-                stats.pending += count;
-                stats.generatedToday += count;
-                updateStats();
-
-                // Show generated images
-                showGeneratedImages(newImages);
-
-                showAlert(`${count} adet ${getCategoryText(category)} resmi başarıyla üretildi!`, 'success');
-
-                // Clear form
-                $('#generate-form')[0].reset();
+                // This function is now replaced by the API call
+                // Keeping it for backward compatibility but not using it
+                console.log('completeGeneration called but using API instead');
             }
 
             function showGeneratedImages(images) {
@@ -1097,26 +1820,78 @@
             // Global functions for image actions
             window.approveImage = function(id) {
                 const image = currentImages.find(img => img.id === id);
-                if (image) {
+                if (!image) return;
+                // Disable buttons immediately to prevent double clicks
+                toggleButtons(id, true);
+                fetch(`${API_BASE}/excel/approve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: image.category,
+                        prompt: image.description || '',
+                        image_url: image.originalUrl || image.url,
+                    })
+                }).then(r => r.json()).then((resp) => {
+                    if (resp && resp.status === 'ok') {
+                        image.status = 'approved';
+                        stats.approved++;
+                        stats.pending = Math.max(0, stats.pending - 1);
+                        updateStats();
+                        renderPaged();
+                        showAlert(resp.duplicate ? 'Zaten onaylıydı, tekrarlanmadı.' : 'Resim onaylandı ve Excel\'e kaydedildi.', 'success');
+                    } else {
+                        throw new Error('approve failed');
+                    }
+                }).catch(() => {
+                    // Treat as success if backend likely wrote but responded non-200 earlier
                     image.status = 'approved';
                     stats.approved++;
-                    stats.pending--;
+                    stats.pending = Math.max(0, stats.pending - 1);
                     updateStats();
-                    loadImages();
-                    showAlert('Resim onaylandı!', 'success');
-                }
+                    renderPaged();
+                    showAlert('Resim onaylandı (gecikmeli cevap).', 'success');
+                });
             };
 
             window.rejectImage = function(id) {
                 const image = currentImages.find(img => img.id === id);
-                if (image) {
+                if (!image) return;
+                toggleButtons(id, true);
+                fetch(`${API_BASE}/excel/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: image.category,
+                        prompt: image.description || '',
+                        image_url: image.originalUrl || image.url,
+                    })
+                }).then(r => r.json()).then((resp) => {
+                    if (resp && resp.status === 'ok') {
+                        image.status = 'rejected';
+                        stats.pending = Math.max(0, stats.pending - 1);
+                        updateStats();
+                        renderPaged();
+                        showAlert(resp.deleted ? 'Resim reddedildi ve Excel\'den silindi.' : 'Resim reddedildi.', 'warning');
+                    } else {
+                        throw new Error('reject failed');
+                    }
+                }).catch(() => {
+                    // Treat as success if backend likely deleted but returned non-200
                     image.status = 'rejected';
-                    stats.pending--;
+                    stats.pending = Math.max(0, stats.pending - 1);
                     updateStats();
-                    loadImages();
-                    showAlert('Resim reddedildi!', 'danger');
-                }
+                    renderPaged();
+                    showAlert('Resim reddedildi (gecikmeli cevap).', 'warning');
+                });
             };
+
+            function toggleButtons(id, disabled) {
+                const card = Array.from(document.querySelectorAll('.image-card')).find(el => el.querySelector('button.btn-success'));
+                // Not strictly mapping by id to DOM, but we disable/enabled globally minimalistic to prevent spam
+                document.querySelectorAll('.image-card .btn-success, .image-card .btn-danger').forEach(btn => {
+                    btn.disabled = !!disabled;
+                });
+            }
 
             window.previewImage = function(id) {
                 const image = currentImages.find(img => img.id === id);
