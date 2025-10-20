@@ -18,7 +18,7 @@
             --bg-secondary: #0f1b2e; /* darker blue */
             --bg-tertiary: #0c1426; /* mid navy */
             --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.86);
+            --text-secondary: rgba(255, 255, 255, 0.92);
             --accent-primary: #007AFF;
             --accent-secondary: #FF3B30;
             --accent-success: #34C759;
@@ -35,7 +35,6 @@
         }
 
         body {
-            margin-top: 1rem;
             background: 
                 linear-gradient(135deg, rgba(5, 10, 20, 0.7) 0%, rgba(10, 22, 44, 0.7) 50%, rgba(6, 14, 30, 0.7) 100%),
                 url('https://www.incehesap.com/resim/blog2/2018-06/macos-majove-de-karanlik-mod-dark-mode-nasil-etkinlestirilir2018-06-29-17-22-15_480.jpg') center/cover fixed;
@@ -267,7 +266,7 @@
         }
 
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .form-label {
@@ -371,7 +370,7 @@
         }
 
         .stats-label {
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
@@ -509,6 +508,19 @@
         .modal-header {
             border-bottom: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.05);
+            padding: 1rem 1.5rem;
+            position: relative;
+            z-index: 1040;
+        }
+
+        .modal-fullscreen .modal-header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1041;
         }
 
         .modal-title {
@@ -516,21 +528,49 @@
             font-weight: 600;
         }
 
+        .modal-fullscreen .modal-title {
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
         .modal-body {
             color: var(--text-primary);
         }
 
         .btn-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: var(--text-primary);
             font-size: 1.5rem;
             opacity: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1050;
         }
 
         .btn-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
             color: var(--text-primary);
             opacity: 1;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-close::before {
+            content: "✕";
+            font-weight: bold;
+            font-size: 18px;
         }
         .status-pill {
             border-radius: 999px;
@@ -538,6 +578,31 @@
             font-weight: 700;
             font-size: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        }
+
+        /* Override Bootstrap's text-muted to be more visible */
+        .text-muted {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        /* Make display icons more visible */
+        .display-1.text-muted {
+            color: rgba(255, 255, 255, 0.75) !important;
+        }
+
+        /* Improve visibility of small text */
+        small.text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* Fix low opacity text to be more visible */
+        .opacity-75 {
+            opacity: 0.9 !important;
+        }
+
+        /* Ensure text-light is bright enough */
+        .text-light {
+            color: rgba(255, 255, 255, 0.95) !important;
         }
     </style>
 </head>
@@ -555,17 +620,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#view-images" data-tab="view">
-                            <i class="bi bi-eye me-1"></i>
+                        <a class="nav-link active" href="#" data-tab="view">
+                            <i class="bi bi-eye me-1"></i>Anasayfa
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#generate-images" data-tab="generate">
+                        <a class="nav-link" href="#generate" data-tab="generate">
                             <i class="bi bi-plus-circle me-1"></i>Üret
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#production-history" data-tab="history">
+                        <a class="nav-link" href="#history" data-tab="history">
                             <i class="bi bi-clock-history me-1"></i>History
                         </a>
                     </li>
@@ -920,6 +985,7 @@ Start generating the designs now:</textarea>
             
             // Main button click handler
             tg.MainButton.onClick(function() {
+                window.location.hash = '';
                 switchTab('view');
                 tg.MainButton.hide();
             });
@@ -1054,6 +1120,21 @@ Start generating the designs now:</textarea>
                 await loadImages();
                 await loadHistory();
                 updateStats();
+                
+                // Check URL hash and switch to appropriate tab
+                initializeTabFromUrl();
+            }
+
+            function initializeTabFromUrl() {
+                const hash = window.location.hash.replace('#', '');
+                const validTabs = ['view', 'generate', 'history'];
+                
+                if (hash && validTabs.includes(hash)) {
+                    switchTab(hash);
+                } else {
+                    // Default to view tab
+                    switchTab('view');
+                }
             }
 
             function setupEventListeners() {
@@ -1062,6 +1143,11 @@ Start generating the designs now:</textarea>
                     e.preventDefault();
                     const tab = $(this).data('tab');
                     switchTab(tab);
+                });
+
+                // Handle browser back/forward button navigation
+                $(window).on('hashchange', function() {
+                    initializeTabFromUrl();
                 });
 
                 // Category and status filters
@@ -1153,6 +1239,16 @@ Start generating the designs now:</textarea>
                 
                 $('.tab-pane').removeClass('active');
                 $(`#${tab}-content`).addClass('active');
+                
+                // Update URL hash to maintain state
+                if (tab !== 'view') {
+                    window.location.hash = tab;
+                } else {
+                    // Remove hash for default view tab
+                    if (window.location.hash) {
+                        history.replaceState(null, null, window.location.pathname);
+                    }
+                }
                 
                 // Telegram button management
                 if (tab === 'view') {
@@ -1428,6 +1524,10 @@ Start generating the designs now:</textarea>
                     '<span class="badge bg-success me-2"><i class="bi bi-check-circle me-1"></i>Excel\'e Kaydedildi</span>' :
                     '<span class="badge bg-warning me-2"><i class="bi bi-clock me-1"></i>Excel\'e Kaydedilmedi</span>';
 
+                // Filter out lh3.googleusercontent.com URLs
+                const filteredImages = entry.images ? entry.images.filter(img => !img.includes('lh3.googleusercontent.com')) : [];
+                const actualImageCount = filteredImages.length;
+
                 return $(`
                     <div class="card mb-3 history-card" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);">
                         <div class="card-header">
@@ -1436,7 +1536,7 @@ Start generating the designs now:</textarea>
                                     <h6 class="card-title mb-1">
                                         <i class="bi bi-calendar-event me-2"></i>
                                         ${entry.category || 'Kategori Yok'}
-                                        <span class="badge bg-primary ms-2">${entry.image_count} Resim</span>
+                                        <span class="badge bg-primary ms-2">${actualImageCount} Resim</span>
                                     </h6>
                                     <small class="text-muted">
                                         <i class="bi bi-clock me-1"></i>
@@ -1462,12 +1562,12 @@ Start generating the designs now:</textarea>
                                 <div class="col-md-4">
                                     <h6 class="text-primary mb-2">Üretilen Resimler:</h6>
                                     <div class="d-flex flex-wrap gap-2">
-                                        ${entry.images ? entry.images.slice(0, 3).map((img, idx) => 
-                                            `<img class="rounded hist-thumb lazy-img" data-orig="${(normalizeUrl(img)).replace(/"/g,'&quot;')}" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistory('${entry.id}', ${idx})" alt="Resim ${idx + 1}">`
+                                        ${filteredImages ? filteredImages.slice(0, 3).map((img, idx) => 
+                                            `<img class="rounded hist-thumb lazy-img" data-orig="${(normalizeUrl(img)).replace(/"/g,'&quot;')}" style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistoryFiltered('${entry.id}', ${idx})" alt="Resim ${idx + 1}">`
                                         ).join('') : ''}
-                                        ${entry.images && entry.images.length > 3 ? 
+                                        ${filteredImages && filteredImages.length > 3 ? 
                                             `<div class="d-flex align-items-center justify-content-center rounded" style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); color: white; font-size: 0.8rem;">
-                                                +${entry.images.length - 3}
+                                                +${filteredImages.length - 3}
                                             </div>` : ''}
                                     </div>
                                 </div>
@@ -1480,7 +1580,15 @@ Start generating the designs now:</textarea>
             window.viewHistoryImages = function(historyId) {
                 const entry = currentHistory.find(h => h.id === historyId);
                 if (!entry || !entry.images) {
-                    showAlert('Resim bulunamadı.', 'warning');
+                    showPopupAlert('⚠️ Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                // Filter out lh3.googleusercontent.com URLs
+                const filteredImages = entry.images.filter(img => !img.includes('lh3.googleusercontent.com'));
+                
+                if (filteredImages.length === 0) {
+                    showPopupAlert('⚠️ Görüntülenecek resim bulunamadı.', 'warning');
                     return;
                 }
 
@@ -1501,7 +1609,7 @@ Start generating the designs now:</textarea>
                                     <div class="mb-3">
                                         <h6 class="text-primary">Üretim Bilgileri:</h6>
                                         <div class="d-flex gap-3">
-                                            <span class="badge bg-info">${entry.image_count} Resim</span>
+                                            <span class="badge bg-info">${filteredImages.length} Resim</span>
                                             <span class="badge ${entry.excel_saved ? 'bg-success' : 'bg-warning'}">
                                                 ${entry.excel_saved ? 'Excel\'e Kaydedildi' : 'Excel\'e Kaydedilmedi'}
                                             </span>
@@ -1509,9 +1617,9 @@ Start generating the designs now:</textarea>
                                         </div>
                                     </div>
                                     <div class="image-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-                                        ${entry.images.map((img, idx) => `
+                                        ${filteredImages.map((img, idx) => `
                                             <div class="image-card" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden;">
-                                                <img src="${proxied(normalizeUrl(img))}" class="img-fluid" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistory('${entry.id}', ${idx})" alt="Resim ${idx + 1}">
+                                                <img src="${proxied(normalizeUrl(img))}" class="img-fluid" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" onclick="previewImageFromHistoryFiltered('${entry.id}', ${idx})" alt="Resim ${idx + 1}">
                                                 <div class="p-2">
                                                     <small class="text-muted">Resim ${idx + 1}</small>
                                                 </div>
@@ -1542,12 +1650,56 @@ Start generating the designs now:</textarea>
 
             window.previewImageFromHistory = function(historyId, imageIndex) {
                 const entry = currentHistory.find(h => h.id === historyId);
-                if (!entry || !entry.images || !entry.images[imageIndex]) {
-                    showAlert('Resim bulunamadı.', 'warning');
+                if (!entry || !entry.images) {
+                    showPopupAlert('⚠️ Resim bulunamadı.', 'warning');
                     return;
                 }
 
-                const candidates = buildUrlCandidates(entry.images[imageIndex]);
+                // Filter out lh3.googleusercontent.com URLs first
+                const filteredImages = entry.images.filter(img => !img.includes('lh3.googleusercontent.com'));
+                
+                if (!filteredImages[imageIndex]) {
+                    showPopupAlert('⚠️ Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                const candidates = buildUrlCandidates(filteredImages[imageIndex]);
+                const imgEl = document.getElementById('modalImage');
+                // Reset any previous handler
+                imgEl.removeAttribute('src');
+                imgEl._candidates = candidates;
+                imgEl.onerror = function() {
+                    const next = imgEl._candidates && imgEl._candidates.shift();
+                    if (next) imgEl.src = next; else imgEl.src = EMPTY_IMG;
+                };
+                imgEl.referrerPolicy = 'no-referrer';
+                imgEl.crossOrigin = 'anonymous';
+                imgEl.src = (imgEl._candidates && imgEl._candidates.shift()) || EMPTY_IMG;
+                $('#modalTitle').text(`Üretim Geçmişi - ${entry.category || 'Kategori Yok'} - Resim ${imageIndex + 1}`);
+                $('#modalCategory').text(entry.category || 'Kategori Yok');
+                $('#modalDescription').text(entry.prompt || 'Prompt bulunamadı');
+                
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            };
+
+            window.previewImageFromHistoryFiltered = function(historyId, imageIndex) {
+                // This function is called from the modal grid, imageIndex is already based on filtered array
+                const entry = currentHistory.find(h => h.id === historyId);
+                if (!entry || !entry.images) {
+                    showPopupAlert('⚠️ Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                // Filter out lh3.googleusercontent.com URLs
+                const filteredImages = entry.images.filter(img => !img.includes('lh3.googleusercontent.com'));
+                
+                if (!filteredImages[imageIndex]) {
+                    showPopupAlert('⚠️ Resim bulunamadı.', 'warning');
+                    return;
+                }
+
+                const candidates = buildUrlCandidates(filteredImages[imageIndex]);
                 const imgEl = document.getElementById('modalImage');
                 // Reset any previous handler
                 imgEl.removeAttribute('src');
@@ -1654,7 +1806,7 @@ Start generating the designs now:</textarea>
                 const prompt = $('#prompt-input').val();
 
                 if (!category || !count) {
-                    showAlert('Lütfen kategori ve resim sayısını seçin.', 'danger');
+                    showPopupAlert('⚠️ Lütfen kategori ve resim sayısını seçin.', 'warning');
                     return;
                 }
 
@@ -1714,7 +1866,7 @@ Start generating the designs now:</textarea>
                     const result = await response.json();
                     
                     if (result.status === 'success') {
-                        showAlert('Başarılı! Çalışmaya başladı. Resimler oluşturuluyor...', 'success');
+                        showPopupAlert('🎉 Başarılı! Resim üretimi başlatıldı. Resimler oluşturuluyor...', 'success');
                         // Refresh history to show the new run
                         setTimeout(loadHistory, 1000);
                         // Poll history entry for images a few times
@@ -1743,7 +1895,24 @@ Start generating the designs now:</textarea>
                     }
                 } catch (error) {
                     console.error('Generation error:', error);
-                    showAlert('Resim üretimi başlatılamadı: ' + error.message, 'danger');
+                    
+                    // Check if this is a queue message (success case)
+                    const errorMsg = error.message || '';
+                    if (errorMsg.includes('Request enqueued') || errorMsg.includes('Worker will process')) {
+                        showPopupAlert('✅ Resim üretimi sıraya alındı! İşlem sırasıyla yapılacak.', 'success');
+                        // Don't hide progress or enable button for queue success
+                        return;
+                    }
+                    
+                    // Handle actual errors
+                    let turkishError = errorMsg;
+                    if (errorMsg.includes('Failed to fetch')) {
+                        turkishError = 'API sunucusuna bağlanılamadı. Lütfen tekrar deneyin.';
+                    } else if (errorMsg.includes('Generation failed')) {
+                        turkishError = 'Resim üretimi başarısız oldu. Lütfen tekrar deneyin.';
+                    }
+                    
+                    showPopupAlert('❌ Resim üretimi başlatılamadı: ' + turkishError, 'danger');
                     $('#generation-progress').hide();
                     $('#generate-btn').prop('disabled', false);
                 }
@@ -1752,8 +1921,9 @@ Start generating the designs now:</textarea>
             // Jump to selected category images from Generate tab
             $('#btn-go-category').on('click', function() {
                 const cat = $('#generate-category').val();
-                if (!cat) { showAlert('Önce bir kategori seçin.', 'warning'); return; }
+                if (!cat) { showPopupAlert('⚠️ Önce bir kategori seçin.', 'warning'); return; }
                 // Switch to view tab and set the filter
+                window.location.hash = '';
                 switchTab('view');
                 $('#category-filter').val(cat).trigger('change');
                 // Scroll to images grid
@@ -1818,6 +1988,89 @@ Start generating the designs now:</textarea>
                 }, 5000);
             }
 
+            function showPopupAlert(message, type) {
+                // Create unique modal ID
+                const modalId = 'alertModal_' + Date.now();
+                
+                // Determine icon and colors based on type
+                let icon = '';
+                let bgColor = '';
+                let borderColor = '';
+                let headerBg = '';
+                
+                switch(type) {
+                    case 'success':
+                        icon = '<i class="bi bi-check-circle-fill text-success me-2" style="font-size: 1.5rem;"></i>';
+                        bgColor = 'rgba(52, 199, 89, 0.1)';
+                        borderColor = 'rgba(52, 199, 89, 0.3)';
+                        headerBg = 'rgba(52, 199, 89, 0.15)';
+                        break;
+                    case 'danger':
+                        icon = '<i class="bi bi-exclamation-triangle-fill text-danger me-2" style="font-size: 1.5rem;"></i>';
+                        bgColor = 'rgba(255, 59, 48, 0.1)';
+                        borderColor = 'rgba(255, 59, 48, 0.3)';
+                        headerBg = 'rgba(255, 59, 48, 0.15)';
+                        break;
+                    case 'warning':
+                        icon = '<i class="bi bi-exclamation-circle-fill text-warning me-2" style="font-size: 1.5rem;"></i>';
+                        bgColor = 'rgba(255, 193, 7, 0.1)';
+                        borderColor = 'rgba(255, 193, 7, 0.3)';
+                        headerBg = 'rgba(255, 193, 7, 0.15)';
+                        break;
+                    default:
+                        icon = '<i class="bi bi-info-circle-fill text-info me-2" style="font-size: 1.5rem;"></i>';
+                        bgColor = 'rgba(0, 122, 255, 0.1)';
+                        borderColor = 'rgba(0, 122, 255, 0.3)';
+                        headerBg = 'rgba(0, 122, 255, 0.15)';
+                }
+
+                const modalHtml = `
+                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="background: ${bgColor}; border: 1px solid ${borderColor}; backdrop-filter: blur(40px);">
+                                <div class="modal-header border-0" style="background: ${headerBg};">
+                                    <h5 class="modal-title text-light d-flex align-items-center">
+                                        ${icon}
+                                        Bildirim
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center py-4">
+                                    <div class="text-light" style="font-size: 1.1rem; line-height: 1.4;">
+                                        ${message}
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 justify-content-center">
+                                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Tamam</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Remove any existing alert modals
+                $('[id^="alertModal_"]').remove();
+                
+                // Add modal to body
+                $('body').append(modalHtml);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById(modalId));
+                modal.show();
+                
+                // Auto-close success messages after 4 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        modal.hide();
+                    }, 4000);
+                }
+                
+                // Clean up when modal is hidden
+                $(`#${modalId}`).on('hidden.bs.modal', function() {
+                    $(this).remove();
+                });
+            }
+
             // Global functions for image actions
             window.approveImage = function(id) {
                 const image = currentImages.find(img => img.id === id);
@@ -1839,7 +2092,7 @@ Start generating the designs now:</textarea>
                         stats.pending = Math.max(0, stats.pending - 1);
                         updateStats();
                         renderPaged();
-                        showAlert(resp.duplicate ? 'Zaten onaylıydı, tekrarlanmadı.' : 'Resim onaylandı ve Excel\'e kaydedildi.', 'success');
+                        showPopupAlert(resp.duplicate ? '✅ Zaten onaylıydı, tekrarlanmadı.' : '✅ Resim onaylandı ve Excel\'e kaydedildi.', 'success');
                     } else {
                         throw new Error('approve failed');
                     }
@@ -1850,7 +2103,7 @@ Start generating the designs now:</textarea>
                     stats.pending = Math.max(0, stats.pending - 1);
                     updateStats();
                     renderPaged();
-                    showAlert('Resim onaylandı (gecikmeli cevap).', 'success');
+                    showPopupAlert('✅ Resim onaylandı (gecikmeli cevap).', 'success');
                 });
             };
 
@@ -1872,7 +2125,7 @@ Start generating the designs now:</textarea>
                         stats.pending = Math.max(0, stats.pending - 1);
                         updateStats();
                         renderPaged();
-                        showAlert(resp.deleted ? 'Resim reddedildi ve Excel\'den silindi.' : 'Resim reddedildi.', 'warning');
+                        showPopupAlert(resp.deleted ? '🗑️ Resim reddedildi ve Excel\'den silindi.' : '❌ Resim reddedildi.', 'warning');
                     } else {
                         throw new Error('reject failed');
                     }
@@ -1882,7 +2135,7 @@ Start generating the designs now:</textarea>
                     stats.pending = Math.max(0, stats.pending - 1);
                     updateStats();
                     renderPaged();
-                    showAlert('Resim reddedildi (gecikmeli cevap).', 'warning');
+                    showPopupAlert('❌ Resim reddedildi (gecikmeli cevap).', 'warning');
                 });
             };
 
